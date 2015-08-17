@@ -1,13 +1,15 @@
 class OrganizationProfileController {
-    constructor(OrganizationService) {
+    constructor(OrganizationService, $scope) {
         this.name = 'OrganizationProfileController';
         this._orgService = OrganizationService;
-        this.activate();
+        this.activate($scope);
     }
 
-    activate() {
-//        this._orgService.setCurrent('aaa');
-//        this.org = this._orgService.currentOrg;
+    activate($scope) {
+        return this._orgService.getById('-JwtOVhzv6bltCA3DYYC').then(org => {
+            this.org = org;
+            this.org.$bindTo($scope, 'vm.org');
+        });
     }
 
 }

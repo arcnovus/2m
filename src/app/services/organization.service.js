@@ -1,55 +1,68 @@
 class OrganizationService {
-    constructor(Firebase, $firebaseArray, $firebaseObject, ResourcePath, $q) {
+    constructor($q, ErrorType, Firebase, $firebaseArray, $firebaseObject, ResourcePath) {
         'ngInject';
         this.name = "OrganizationService";
-        this._$firebaseObject = $firebaseObject;
-        this._orgRef = new Firebase(ResourcePath.OrganizationPath);
-        this.organizationList = $firebaseArray(this._orgRef);
         this._$q = $q;
-        console.log(this.organizationList);
+        this._ErrorType = ErrorType;
+        this._$firebaseObject = $firebaseObject;
+        this._$firebaseArray = $firebaseArray;
+        this._orgRef = new Firebase(ResourcePath.OrganizationPath);
     }
 
     add(name, details) {
-        return this.get(name).then(org => {
-            //            if (!org) {
-            return this._add(name, details);
-            //            } else {
-            //                return org;
-            //            }
-        });
+        return this.getByName(name)
+            .then(org => {
+                console.log(org);
+                if (!org) {
+                    return this._add(name, details);
+                } else {
+                    let err = this._ErrorType.exists(name);
+                    return this._$q.reject(err);
+                }
+            });
     }
 
     _add(name, details) {
         details.name = name;
-        let newOrgRef = this._orgRef.push(details);
-        newOrgRef.setPriority(name);
-        return this._$q.when(this._$firebaseObject(newOrgRef));
-    }
+        return this._$firebaseArray(this._orgRef)
+            .$add(details)
+            .then(newOrgRef => {
 
-    update(name, details) {
-        let ref = this._orgRef.child(name);
-        ref.update(details);
+                return this._$firebaseObject(newOrgRef)
+                    .$loaded()
+                    .then(data => data);
+            });
     }
-
-    remove(name) {
-        let orgIndex = this.organizationList.$indexFor(name);
-        return this.organizationList.$remove(orgIndex).then((ref => ref), (err => console.log(err)));
-    }
-
 
     getById(orgId) {
         let org = this._$firebaseObject(this._orgRef.child(orgId));
-        return org.$loaded().then(() => org);
+        return org.$loaded().then((data) => data);
     }
 
     getByName(name) {
-        this._orgRef.orderByChild('name').once('value', snapshot => snapshot.val();
+        let query = this._orgRef
+            .orderByChild('name')
+            .equalTo(name);
 
-        }
-        save(organization) {
-            return organization.$save().then(ref => ref);
-        }
+        return this._$firebaseArray(query)
+            .$loaded()
+            .then(orgs => orgs[0]);
 
     }
 
-    export default OrganizationService;
+    getList() {
+        let query = this._orgRef
+            .orderByChild('name');
+
+        return this._$firebaseArray(query)
+            .$loaded()
+            .then(orgs => orgs);
+    }
+
+    save(organization) {
+        return organization.$save().then(ref => this._$firebaseObject(ref));
+    }
+
+}
+
+export default OrganizationService;

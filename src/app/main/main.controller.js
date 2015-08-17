@@ -9,10 +9,7 @@ class MainController {
 
     activate() {
         console.info('acivating!');
-        this._orgService.add('Arcnovus', {
-            id: "Arcnovus",
-            name: "Arcnovus"
-        }).then(org => {
+        this._orgService.getByName('Arcnovus').then(org => {
             console.log(org);
             this.org = org;
         });

@@ -4,7 +4,9 @@ class ResourcePath {
         this._basePath = 'http://2m.firebaseio.com/';
         this._organizations = 'Organizations/';
         this._tests = 'Tests/';
+        this._testTypes = 'TestTypes/';
         this._questions = 'Questions/';
+        this._questionTypes = 'QuestionTypes/';
     }
 
     get BasePath() {
@@ -19,8 +21,16 @@ class ResourcePath {
         return this.BasePath + this._tests;
     }
 
+    get TestTypePath() {
+        return this.BasePath + this._testTypes;
+    }
+
     get QuestionPath() {
         return this.BasePath + this._questions;
+    }
+
+    get QuestionTypePath() {
+        return this.BasePath + this._questionTypes;
     }
 }
 

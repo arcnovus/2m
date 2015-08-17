@@ -5,6 +5,10 @@ function routerConfig($stateProvider, $urlRouterProvider) {
             url: '/',
             templateUrl: 'app/main/main.html',
             controller: 'MainController as vm'
+        })
+        .state('settings', {
+            url: '/settings',
+            templateUrl: 'app/settings/settings.html'
         });
 
     $urlRouterProvider.otherwise('/');
